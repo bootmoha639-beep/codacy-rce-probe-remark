@@ -1,1 +1,1 @@
-{"tools": [{"name": "remark-lint", "patterns": []}]}
+{"tools": [{"name": "remark-lint", "isCustom": true, "patterns": []}]}
